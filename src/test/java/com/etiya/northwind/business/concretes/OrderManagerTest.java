@@ -84,6 +84,7 @@ class OrderManagerTest {
     @Test
     void updateTest_whenOrderIsUpdated_assertDataIntegrity() {
         Order order =  Order.builder().orderId(1).build();
+        when(mockOrderRepository.existsById(order.getOrderId())).thenReturn(true);
         when(mockOrderRepository.findById(order.getOrderId())).thenReturn(Optional.of(order));
         UpdateOrderRequest updateRequest = this.modelMapperService.forRequest().map(order, UpdateOrderRequest.class);
         orderManager.update(updateRequest);

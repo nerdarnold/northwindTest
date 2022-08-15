@@ -2,6 +2,7 @@ package com.etiya.northwind;
 
 import com.etiya.northwind.business.responses.customers.CustomerListResponse;
 import com.etiya.northwind.entities.concretes.*;
+import org.aspectj.weaver.ast.Or;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -97,6 +98,19 @@ public class TestSupport {
                         .customer(customer)
                         .employee(employee)
                         .orderId(i)
+                        .build())
+                .collect(Collectors.toList());
+    }
+    public static List<OrderDetails> generateOrderDetails(){
+        Order order = Order.builder().orderId(1).build();
+        Product product = Product.builder().productId(1).build();
+        return IntStream.rangeClosed(1,5)
+                .mapToObj(i -> OrderDetails
+                        .builder()
+                        .order(order)
+                        .orderId(order.getOrderId())
+                        .productId(product.getProductId())
+                        .product(product)
                         .build())
                 .collect(Collectors.toList());
     }

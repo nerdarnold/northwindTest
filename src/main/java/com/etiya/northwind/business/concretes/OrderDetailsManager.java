@@ -43,6 +43,10 @@ public class OrderDetailsManager implements OrderDetailsService {
 
     @Override
     public Result add(CreateOrderDetailRequest createOrderDetailsRequest) {
+        OrderDetailsId orderDetailsId = new OrderDetailsId();
+        orderDetailsId.setOrderId(createOrderDetailsRequest.getOrderId());
+        orderDetailsId.setProductId(createOrderDetailsRequest.getProductId());
+        checkOrderDetailsExists(orderDetailsId);
         OrderDetails orderDetails = this.modelMapperService.forRequest().map(createOrderDetailsRequest, OrderDetails.class);
         orderDetailsRepository.save(orderDetails);
         return new SuccessResult("Added");
@@ -50,6 +54,10 @@ public class OrderDetailsManager implements OrderDetailsService {
 
     @Override
     public Result update(UpdateOrderDetailRequest updateOrderDetailsRequest) {
+        OrderDetailsId orderDetailsId = new OrderDetailsId();
+        orderDetailsId.setProductId(updateOrderDetailsRequest.getProductId());
+        orderDetailsId.setOrderId(updateOrderDetailsRequest.getOrderId());
+        checkOrderDetailsNotExists(orderDetailsId);
         OrderDetails orderDetails = this.modelMapperService.forRequest().map(updateOrderDetailsRequest, OrderDetails.class);
         orderDetailsRepository.save(orderDetails);
         return new SuccessResult("Updated");
@@ -57,7 +65,6 @@ public class OrderDetailsManager implements OrderDetailsService {
 
     @Override
     public Result delete(OrderDetailsId orderDetailsId) {
-        checkOrderDetailsExists(orderDetailsId);
         this.orderDetailsRepository.deleteById(orderDetailsId);
         return new SuccessResult("Deleted successfully.");
     }
@@ -101,6 +108,11 @@ public class OrderDetailsManager implements OrderDetailsService {
     }
 
     private void checkOrderDetailsExists(OrderDetailsId orderDetailsId) {
+        if (orderDetailsRepository.existsById(orderDetailsId)){
+            throw new BusinessException("Order detail does not exist.");
+        }
+    }
+    private void checkOrderDetailsNotExists(OrderDetailsId orderDetailsId) {
         if (!orderDetailsRepository.existsById(orderDetailsId)){
             throw new BusinessException("Order detail does not exist.");
         }

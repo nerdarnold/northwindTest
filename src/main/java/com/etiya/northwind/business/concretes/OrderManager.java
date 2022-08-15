@@ -79,6 +79,7 @@ public class OrderManager implements OrderService {
 
     @Override
     public Result update(UpdateOrderRequest updateOrderRequest) {
+        isOrderNotExists(updateOrderRequest.getOrderId());
         Order order = this.modelMapperService.forRequest().map(updateOrderRequest, Order.class);
         orderRepository.save(order);
         return new SuccessResult();
@@ -134,6 +135,11 @@ public class OrderManager implements OrderService {
     }
     private void isOrderExists(int orderId) {
         if (orderRepository.existsById(orderId)) {
+            throw new BusinessException("Order already exists.");
+        }
+    }
+    private void isOrderNotExists(int orderId) {
+        if (!orderRepository.existsById(orderId)) {
             throw new BusinessException("Order already exists.");
         }
     }
